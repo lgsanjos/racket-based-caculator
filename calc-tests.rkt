@@ -1,0 +1,50 @@
+#lang racket
+
+(require rackunit "calc.rkt")
+
+; fase 1 - transformar uma string em uma lista
+(check-equal? (parse-expression "89123") '(89123))
+(check-equal? (parse-expression "4+5") '(4 + 5))
+(check-equal? (parse-expression "(2+3)*4") '((2 + 3) * 4))
+(check-equal? (parse-expression "2*(3+4)") '(2 * (3 + 4)))
+(check-equal? (parse-expression "12 - 34 *  56^2") '(12 - 34 * 56 ^ 2))
+(check-equal? (parse-expression "((3*((1) + 26))/(4+5))") '(((3 * ((1) + 26)) / (4 + 5))))
+(check-equal? (parse-expression "123456789+(53*(42-312))") '(123456789 + (53 * (42 - 312))))
+
+; fase 2 - tranformar uma expressão na forma infixa para a forma prefixa
+; expressões simples
+(check-equal? (infix-to-prefix '(4 + 5)) '(+ 4 5))
+(check-equal? (infix-to-prefix '(4 - 5)) '(- 4 5))
+(check-equal? (infix-to-prefix '(4 * 5)) '(* 4 5))
+(check-equal? (infix-to-prefix '(4 / 5)) '(/ 4 5))
+(check-equal? (infix-to-prefix '(4 ^ 5)) '(^ 4 5))
+
+; mesma precedência, associatividade da esquerda para direita
+(check-equal? (infix-to-prefix '(1 * 2 * 3 * 4)) '(* (* (* 1 2) 3) 4))
+(check-equal? (infix-to-prefix '(1 + 2 + 3 + 4)) '(+ (+ (+ 1 2) 3) 4))
+
+; mesma precedência, associatividade da direita para esquerda
+(check-equal? (infix-to-prefix '(2 ^ 3 ^ 4)) '(^ 2 (^ 3 4)))
+
+; expressões gerais
+(check-equal? (infix-to-prefix '(2 + 3 * 4)) '(+ 2 (* 3 4)))
+(check-equal? (infix-to-prefix '(2 * 3 + 4)) '(+ (* 2 3) 4))
+(check-equal? (infix-to-prefix '(2 - 3 + 4 * 16 / 2 ^ 3)) '(+ (- 2 3) (/ (* 4 16) (^ 2 3))))
+
+; expressões gerais com uso de parênteses
+(check-equal? (infix-to-prefix '((2 + 3) * 4)) '(* (+ 2 3) 4))
+(check-equal? (infix-to-prefix '(2 * (3 + 4))) '(* 2 (+ 3 4)))
+(check-equal? (infix-to-prefix '(((2 + 3) * 4) ^ 5)) '(^ (* (+ 2 3) 4) 5))
+(check-equal? (infix-to-prefix '(2 ^ (3 * (4 + 5)))) '(^ 2 (* 3 (+ 4 5))))
+(check-equal? (infix-to-prefix '(2)) 2)
+(check-equal? (infix-to-prefix '(((2)))) 2)
+(check-equal? (infix-to-prefix '((((2))) * (((3))))) '(* 2 3))
+
+; fase 3 - avaliar uma expressão na forma infixa
+(check-equal? (eval-infix "89123") 89123)
+(check-equal? (eval-infix "4+5") 9)
+(check-equal? (eval-infix "(2+3)*4") 20)
+(check-equal? (eval-infix "2*(3+4)") 14)
+(check-equal? (eval-infix "12 - 34 *  56^2") -106612)
+(check-equal? (eval-infix "((3*((1) + 26))/(4+5))") 9)
+(check-equal? (eval-infix "123456789+(53*(42-312))") 123442479)
