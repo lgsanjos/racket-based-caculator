@@ -2,10 +2,22 @@
 
 (require "verifica_tipos.rkt")
 
+
+(define (agrupaNumeros lista)
+  (cond 
+    [ (empty? lista) '() ]
+    [ else (if (eq? (car lista) #\space)
+              '()
+              ((cons (car lista) (agrupaNumeros (rest lista))))
+           )
+    ]
+  )
+)
+
 (define (limpaCaracteres lista)
   (cond 
     [ (empty? lista) '() ]
-    [ else (cons (limpaChar (first lista)) (limpaCaracteres (rest lista))) ]
+    [ (cons (limpaChar (first lista)) (limpaCaracteres (rest lista))) ]
   )
 )
 
