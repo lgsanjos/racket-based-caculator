@@ -1,0 +1,10 @@
+#lang racket
+
+
+(define (ehOperador? char)
+   (cond 
+      [(eq? (char->integer char) 43) #t] ; +
+      [(eq? (char->integer char) 45) #t] ; -
+      (else #f)
+   )   
+ )
