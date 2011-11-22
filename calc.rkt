@@ -3,55 +3,70 @@
 (require "verifica_tipos.rkt")
 
 
-(define (numerosDeUmaLista lista)
+(define (blocoDeNumeros lista)
   (cond 
         [ (null? lista) '() ] 
 
         [ (ehNumero? (first lista))
-            (cons (first lista) (numerosDeUmaLista (rest lista)))
+            (cons (first lista) (blocoDeNumeros (rest lista)))
         ]
 
         [ else '() ]
   )    
 )
 
+(define (blocoDeParanteses lista)
+  (cond 
+        [ (null? lista) '() ] 
+        [ (not (eq? #\) (first lista)))
+            (cons (first lista) (blocoDeParanteses (rest lista)))
+        ]
+        [ else '() ]
+        
+  )    
+)
 
-(define (tokenizar-se-operador lista)
+;; ---------------
+
+(define (tokenizar-caso-operador lista)
   (cons (limpaChar(first lista)) (tokenizar (rest lista)))
 )
   
-(define (tokenizar-se-numero lista)
-  (cons (string->number (list->string (numerosDeUmaLista lista)))
-        (tokenizar (list-tail lista (length (numerosDeUmaLista lista)))))
+(define (tokenizar-caso-numero lista)
+  (cons (string->number (list->string (blocoDeNumeros lista)))
+        (tokenizar (list-tail lista (length (blocoDeNumeros lista)))))
 )
   
-(define (tokenizar-se-abre-parenteses lista)
+(define (tokenizar-caso-abre-parenteses lista)
    (cond 
      [ (eq? (first lista) #\)) '() ]
+     ;[ (eq? (first lista) #\() (tokenizar lista) ]
      [ else (tokenizar (rest lista)) ]
-       
    )
 )
+
 
 (define (tokenizar listaDeChar)
   (cond 
         [ (null? listaDeChar) '() ]
         
-        [ (eq? (first listaDeChar) #\()
-             (cons (tokenizar-se-abre-parenteses listaDeChar) (tokenizar (rest listaDeChar)))
-        ]        
+        [ (eq? (first listaDeChar) #\( )
+          (cons (tokenizar-caso-abre-parenteses listaDeChar) (tokenizar (list-tail listaDeChar (length(blocoDeParanteses listaDeChar)))))
+        ]
         
         [ (ehOperador? (first listaDeChar))
-             (tokenizar-se-operador listaDeChar)
+             (tokenizar-caso-operador listaDeChar)
         ]
         
         [ (ehNumero? (first listaDeChar))
-             (tokenizar-se-numero listaDeChar)
+             (tokenizar-caso-numero listaDeChar)
         ]
         
         [ else (tokenizar (rest listaDeChar)) ]
   )
 )
+
+;; ---------------
 
 (define (limpaChar char)
   (cond
@@ -61,6 +76,8 @@
     [ else '() ]
   )
 )
+
+;; ---------------
 
 (define (parse-expression stringDeEntrada)
   (tokenizar(string->list stringDeEntrada))
