@@ -43,6 +43,15 @@
   (- (char->integer char) 48)
 )
 
+(define (limpaChar char)
+  (cond
+    [ (ehOperador? char) (char->simbolo char) ]
+    [ (ehNumero? char) (char->numero char) ]
+    [ (ehParenteses? char) char ]
+    [ else '() ]
+  )
+)
+
 
 (provide ehOperador?
          ehParenteses?
@@ -50,4 +59,5 @@
          char->numero
          char->simbolo
          char->parenteses
+         limpaChar
 )

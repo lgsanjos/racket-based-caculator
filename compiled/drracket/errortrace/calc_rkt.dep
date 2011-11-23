@@ -1,1 +1,1 @@
-("5.2" ("22081975218859ac21e3f2b6a10791ffa2cdd78d" . "f737aa58c43a74e1d3cdbec56e4934d2492ea9ee") (collects #"racket" #"main.rkt") (collects #"errortrace" #"errortrace-key.rkt") #"/home/sanjos/workspace/lp4/verifica_tipos.rkt" (collects #"racket" #"lang" #"reader.rkt"))
+("5.2" ("9a68eb612f8cb982e0e516fc12b968359abaf81b" . "3efafc5af464ff6f70c6166386025ad6f513af89") (collects #"racket" #"main.rkt") #"C:\\Documents and Settings\\guilherme.anjos\\Projetos\\trab_lp4\\verifica_tipos.rkt" (collects #"racket" #"lang" #"reader.rkt"))

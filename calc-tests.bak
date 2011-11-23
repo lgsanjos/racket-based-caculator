@@ -7,6 +7,8 @@
 (check-equal? (parse-expression "4+5") '(4 + 5))
 (check-equal? (parse-expression "(2+3)*4") '((2 + 3) * 4))
 (check-equal? (parse-expression "2*(3+4)") '(2 * (3 + 4)))
+
+
 (check-equal? (parse-expression "12 - 34 *  56^2") '(12 - 34 * 56 ^ 2))
 (check-equal? (parse-expression "((3*((1) + 26))/(4+5))") '(((3 * ((1) + 26)) / (4 + 5))))
 (check-equal? (parse-expression "123456789+(53*(42-312))") '(123456789 + (53 * (42 - 312))))
