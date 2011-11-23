@@ -15,55 +15,71 @@
   )    
 )
 
-(define (blocoDeParanteses lista)
-  (cond 
-        [ (null? lista) '() ] 
-        [ (not (eq? #\) (first lista)))
-            (cons (first lista) (blocoDeParanteses (rest lista)))
-        ]
-        [ else '() ]
-        
-  )    
-)
+;; ---------------
+  
+(define (montaTokenLista lista)
+  
+  (define (montaTokenLista-rec lista)
+  
+        (cond
+          
+          [ (null? lista) '() ]   
+                    
+          [ (ehOperador? (first lista))
+            (cons (limpaChar(first lista)) (montaTokenLista-rec (rest lista)))            
+          ]
+          
+          [ (ehNumero? (first lista))
+            (cons (string->number (list->string (blocoDeNumeros lista)))
+                  (montaTokenLista-rec (list-tail lista (length (blocoDeNumeros lista)))))
+          ]
+                    
+          [ (eq? (first lista) #\))  
+            '()
+          ]
+          
+          [ else (montaTokenLista-rec (rest lista)) ]
+          
+
+     )
+   )
+  
+  (montaTokenLista-rec lista)
+)  
 
 ;; ---------------
-
-(define (tokenizar-caso-operador lista)
-  (cons (limpaChar(first lista)) (tokenizar (rest lista)))
-)
   
-(define (tokenizar-caso-numero lista)
-  (cons (string->number (list->string (blocoDeNumeros lista)))
-        (tokenizar (list-tail lista (length (blocoDeNumeros lista)))))
-)
-  
-(define (tokenizar-caso-abre-parenteses lista)
-   (cond 
-     [ (eq? (first lista) #\)) '() ]
-     ;[ (eq? (first lista) #\() (tokenizar lista) ]
-     [ else (tokenizar (rest lista)) ]
-   )
-)
-
-
 (define (tokenizar listaDeChar)
-  (cond 
-        [ (null? listaDeChar) '() ]
-        
-        [ (eq? (first listaDeChar) #\( )
-          (cons (tokenizar-caso-abre-parenteses listaDeChar) (tokenizar (list-tail listaDeChar (length(blocoDeParanteses listaDeChar)))))
-        ]
-        
-        [ (ehOperador? (first listaDeChar))
-             (tokenizar-caso-operador listaDeChar)
-        ]
-        
-        [ (ehNumero? (first listaDeChar))
-             (tokenizar-caso-numero listaDeChar)
-        ]
-        
-        [ else (tokenizar (rest listaDeChar)) ]
+  
+  (define tamanho 1)
+  
+  (define (tokenizar-rec listaDeChar)    
+    (cond 
+      [ (null? listaDeChar) '() ]
+      
+      [ (ehOperador? (first listaDeChar))
+           (set! tamanho (+ 1 tamanho))           
+           (cons (limpaChar(first listaDeChar)) (tokenizar-rec (rest listaDeChar)))
+      ]
+      
+      [ (ehNumero? (first listaDeChar))
+           (set! tamanho (+ 1 tamanho))           
+           (cons (string->number (list->string (blocoDeNumeros listaDeChar)))
+              (tokenizar-rec (list-tail listaDeChar (length (blocoDeNumeros listaDeChar)))))
+      ]
+      
+      [ (eq? (first listaDeChar) #\( )
+        (cons (montaTokenLista listaDeChar)             
+              ;(tokenizar-rec (list-tail listaDeChar (+ tamanho (length (montaTokenLista listaDeChar)))))
+              (tokenizar-rec (list-tail listaDeChar (- (length listaDeChar) (length (montaTokenLista listaDeChar)))))
+        )
+      ]        
+      
+      [ else (tokenizar-rec (rest listaDeChar)) ]
+    )
   )
+  
+  (tokenizar-rec listaDeChar)
 )
 
 ;; ---------------
@@ -99,3 +115,5 @@
 ; (parse-expression "89123")
 ; (parse-expression "4+5")
 ; (parse-expression "4+5 - 1 ( 2 * 22)")
+; (parse-expression "4+5 - 1 ( 2 * 22) + 2")
+; (parse-expression "4+ (5 ^ 2) - 1 ( 2 * 22) + 2")
