@@ -14,54 +14,92 @@
   )    
 )
 
+(define (numeroDeParentesesEmLista lista)
+  (cond 
+        [ (null? lista) 0 ] 
+
+        [ (list? (first lista)) (+ 2 (numeroDeParentesesEmLista (first lista))) ]
+        
+        [ (eq? (first lista) #\( ) (+ 1 (numeroDeParentesesEmLista (rest lista))) ]
+        [ (eq? (first lista) #\) ) (+ 1 (numeroDeParentesesEmLista (rest lista))) ]
+        
+        
+        [ else (+ 0 (numeroDeParentesesEmLista (rest lista))) ]
+  ) 
+)
+
 ;; ---------------
 
 (define (quantidadeDeTokensEmUmaLista lista)
-  
+  (cond
+    [ (null? lista) 0 ]
+    [ (if (list? (first lista))
+          (+ (quantidadeDeTokensEmUmaLista (first lista)) (quantidadeDeTokensEmUmaLista (rest lista)))
+          (+ 1 (quantidadeDeTokensEmUmaLista (rest lista)))
+       )
+    ]
+    [ else 1 ]
+  )
 )  
 
 ;; ---------------
   
-(define (montaTokenLista lista)
+(define (identificaECriaSubListas lista)
+  
+  (define listaCompleta lista)
     
-  (define (outraFunc lista)
+  (define (reconhece-sub-lista lista)
     (cond
           [ (null? lista) '() ]                      
 
           [ (eq? (first lista) #\))
-              '()
+            '()
           ]
 
           [ (eq? (first lista) #\( )
-            (define nova-sub-lista (montaTokenLista-rec lista))
-            (define rabo (list-tail (rest lista) (length nova-sub-lista)))            
-            (cons nova-sub-lista (outraFunc rabo))
+            (identificaECriaSubListas-rec lista)
           ]
           
-          [ else (cons (first lista) (outraFunc (rest lista))) ]
+          [ else (cons (first lista) (reconhece-sub-lista (rest lista))) ]
       )    
   )
   
-  (define (montaTokenLista-rec lista)
+  (define (identificaECriaSubListas-rec lista)
         
        (cond
           [ (null? lista) '() ]
-
+          
+          [ (eq? (first lista) #\) )
+            
+          (identificaECriaSubListas-rec (rest lista)) 
+          ]
+ 
           [ (eq? (first lista) #\( )
-            (define nova-sub-lista (outraFunc (rest lista)))
-            (define rabo (list-tail (rest lista) (length nova-sub-lista)))
-            (cons nova-sub-lista (montaTokenLista-rec rabo))
+                                    
+            (define nova-sub-lista (reconhece-sub-lista (rest lista)))
+
+            (display lista)
+            (display #\newline)
+            
+            (display nova-sub-lista)
+            (display #\newline)
+            
+            (display (+ 2 (numeroDeParentesesEmLista nova-sub-lista) (quantidadeDeTokensEmUmaLista nova-sub-lista)))
+            (display #\newline)
+            
+            (define rabo (list-tail lista (+ 2 (numeroDeParentesesEmLista nova-sub-lista) (quantidadeDeTokensEmUmaLista nova-sub-lista))))
+            (display rabo)
+            (display #\newline)
+             (display #\newline)
+            
+            (cons nova-sub-lista (identificaECriaSubListas-rec rabo))
           ]
 
-          [ (eq? (first lista) #\))
-              (montaTokenLista-rec (rest lista))
-          ]
-
-          [ else (cons (first lista) (montaTokenLista-rec (rest lista))) ]
+          [ else (cons (first lista) (identificaECriaSubListas-rec (rest lista))) ]
        )
    )
 
-  (montaTokenLista-rec lista)
+  (identificaECriaSubListas-rec lista)
 )  
 
 ;; ---------------
@@ -90,4 +128,4 @@
 
 
 (provide tokenizar
-         montaTokenLista)
+         identificaECriaSubListas)
